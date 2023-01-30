@@ -25,12 +25,12 @@ class BusSeeder extends Seeder
                 $cities = City::pluck('id');
                 BusTrip::factory(1, ['bus_id' => $bus->id])
                     ->create()
-                    ->each(function (BusTrip $busRide) use (&$order, &$cities) {
+                    ->each(function (BusTrip $busTrip) use (&$order, &$cities) {
                         for ($i = 0; $i <= 3; $i++) {
                             $random_city = $cities->random();
                             BusTripStation::factory(1, [
                                 'city_id' => $random_city,
-                                'bus_ride_id' => $busRide->id,
+                                'bus_trip_id' => $busTrip->id,
                                 'order' => $i
                             ])->create();
                             $cities->forget($cities->search($random_city));

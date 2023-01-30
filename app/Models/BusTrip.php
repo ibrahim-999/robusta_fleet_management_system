@@ -17,8 +17,8 @@ class BusTrip extends Model
         'trip_end_date'
     ];
     protected $casts = [
-        'ride_end_date' => 'datetime',
-        'ride_start_date' => 'datetime'
+        'trip_end_date' => 'datetime',
+        'trip_start_date' => 'datetime'
     ];
     public function bus(): BelongsTo
     {
