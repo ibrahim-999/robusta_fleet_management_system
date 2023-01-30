@@ -18,10 +18,14 @@ return new class extends Migration
             $table->id();
             $table->dateTime('trip_start_date');
             $table->dateTime('trip_end_date');
+
             $table
                 ->foreignIdFor(Bus::class)
                 ->constrained()
                 ->cascadeOnDelete();
+
+            $table->timestamps();
+
         });
     }
 
