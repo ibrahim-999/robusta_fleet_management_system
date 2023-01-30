@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Bus;
+use App\Models\BusTrip;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,6 +16,10 @@ class BusSeeder extends Seeder
      */
     public function run()
     {
-        Bus::factroy(2)->create();
+        Bus::factory(2)
+            ->create()
+            ->each(function (Bus $bus) {
+                BusTrip::factory(1, ['bus_id' => $bus->id])->create();
+            });
     }
 }
