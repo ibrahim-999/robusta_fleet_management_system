@@ -49,7 +49,7 @@ class BookTripRequest extends FormRequest
                 if (!in_array($seat_number, $available_seats)) {
                     $validator
                         ->errors()
-                        ->add("seat_numbers.$index", 'This seat number is no available for this ride');
+                        ->add("seat_numbers.$index", 'This seat number is no available for this trip');
                 }
             }
         });
@@ -58,7 +58,7 @@ class BookTripRequest extends FormRequest
     {
         $busy_seats = app(BookingService::class)
             ->setStartAndFinishStations($this->get('start_station'), $this->get('finish_station'))
-            ->getBusySeats($this->get('ride_id'));
+            ->getBusySeats($this->get('trip_id'));
         return BusSeat::whereNotIn('id', $busy_seats)
             ->pluck('id')
             ->toArray();
