@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class BusSeat extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'bus_id'
     ];
