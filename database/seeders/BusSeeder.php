@@ -18,9 +18,10 @@ class BusSeeder extends Seeder
      */
     public function run()
     {
-        Bus::factory(2)->create()
+        Bus::factory(2)
+            ->hasSeats(random_int(30,50))
+            ->create()
             ->each(function (Bus $bus) {
-                //Pick city for trip
                 $cities = City::pluck('id');
                 BusTrip::factory(1, ['bus_id' => $bus->id])
                     ->create()
