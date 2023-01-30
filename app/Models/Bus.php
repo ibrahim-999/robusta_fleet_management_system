@@ -18,4 +18,9 @@ class Bus extends Model
     {
         return $this->hasMany(BusTrip::class);
     }
+
+    public function seats(): HasMany
+    {
+        return $this->hasMany(BusSeat::class);
+    }
 }
