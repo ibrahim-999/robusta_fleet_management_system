@@ -25,7 +25,7 @@ Route::prefix('v1')
             ->group(function () {
                 Route::get('cities', 'getCities');
                 Route::get('available-seats', 'getAvailableSeats');
-                Route::post('book-ride', 'bookTrip');
+                Route::post('book-trip', 'bookTrip');
             });
 
     });
