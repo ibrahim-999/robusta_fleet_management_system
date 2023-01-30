@@ -65,7 +65,7 @@ class BookingController extends Controller
         $booking_data = collect($bookTripRequest->validated('seat_numbers'))
             ->map(function ($seat_number) use ($bookTripRequest) {
                 return [
-                    'bus_trip_id' => $bookTripRequest->validated('ride_id'),
+                    'bus_trip_id' => $bookTripRequest->validated('trip_id'),
                     'bus_seat_id' => $seat_number,
                     'start_station' => $bookTripRequest->validated('start_station'),
                     'finish_station' => $bookTripRequest->validated('finish_station'),
