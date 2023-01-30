@@ -31,4 +31,8 @@ class BusTrip extends Model
             ->hasMany(BusTripStation::class)
             ->orderBy('order');
     }
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
