@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $loginRequest)
     {
-        if (auth()->attempt($request->only('email', 'password'))) {
+        if (auth()->attempt($loginRequest->only('email', 'password'))) {
             auth()
                 ->user()
                 ->tokens()
