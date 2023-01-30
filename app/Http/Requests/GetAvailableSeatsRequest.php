@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\FormRequest\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetAvailableSeatsRequest extends FormRequest
+class GetAvailableSeatsRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
