@@ -6,35 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GetAvailableSeatsRequest;
 use App\Http\Resources\BusTripResource;
 use App\Http\Resources\CitiesResource;
-use App\Models\Booking;
 use App\Models\BusTrip;
-use App\Models\BusTripStation;
 use App\Models\City;
+use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-    protected $start_station;
-    protected $finish_station;
-    protected $booking;
+    protected BookingService $bookingService;
 
-    public function setStartAndFinishStations($start_station, $finish_station): static
+    public function __construct(BookingService $bookingService)
     {
-        $this->start_station = $start_station;
-        $this->finish_station = $finish_station;
-        return $this;
-    }
-    public function __construct($booking)
-    {
-        $this->booking = $booking;
+        $this->bookingService = $bookingService;
     }
 
-    public function getStations(): array
-    {
-        return BusTripStation::whereBetween('id', [$this->start_station, $this->finish_station])
-            ->orderBy('order')->pluck('id')->toArray();
-    }
     public function getCities()
     {
         return JsonResponse::success([
@@ -42,32 +27,12 @@ class BookingController extends Controller
         ]);
     }
 
-    public function getBusySeats($trip_id = null): array
-    {
-        $stations = $this->getStations();
-        return Booking::query()
-            ->when($trip_id, function ($query) use ($trip_id) {
-                $query->where('bus_trip_id', $trip_id);
-            })
-            ->where(function ($query) {
-                $query->where('finish_station', '!=', $this->start_station)
-                    ->orWhere('start_station', $this->start_station);
-            })
-            ->whereHas('bookingStations', function ($booking_stations_query) use ($stations) {
-                $booking_stations_query->whereIn('bus_trip_station_id', $stations);
-            })
-            ->distinct('bus_seat_id')
-            ->pluck('bus_seat_id')
-            ->toArray();
-    }
     public function getAvailableSeats(GetAvailableSeatsRequest $request)
     {
-        $busy_seats = $this->booking
+        $busy_seats = $this->bookingService
             ->setStartAndFinishStations(
-                $request
-                    ->get('start_station'),
-                $request
-                    ->get('finish_station'))
+                $request->get('start_station'),
+                $request->get('finish_station'))
             ->getBusySeats();
 
         $buses = BusTrip::whereDay('trip_start_date', today())
@@ -75,7 +40,8 @@ class BookingController extends Controller
                 $stations_query
                     ->whereIn('city_id', [
                         request('start_station'),
-                        request('finish_station')]);
+                        request('finish_station')
+                    ]);
             })
             ->with('bus', function ($bus_query) use ($busy_seats) {
                 $bus_query
