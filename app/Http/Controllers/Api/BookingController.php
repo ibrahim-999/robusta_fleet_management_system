@@ -7,6 +7,7 @@ use App\Http\Requests\BookTripRequest;
 use App\Http\Requests\GetAvailableSeatsRequest;
 use App\Http\Resources\BusTripResource;
 use App\Http\Resources\CitiesResource;
+use App\Http\Responses\ApiResponse;
 use App\Models\BookingStation;
 use App\Models\BusTrip;
 use App\Models\BusTripStation;
@@ -25,7 +26,7 @@ class BookingController extends Controller
 
     public function getCities()
     {
-        return JsonResponse::success([
+        return ApiResponse::success([
             'cities' => CitiesResource::collection(City::paginate())
         ]);
     }
@@ -91,7 +92,7 @@ class BookingController extends Controller
             }
         }
         BookingStation::insert($booking_station_data);
-        return new JsonResponse;
+        return ApiResponse::success([], 201);
     }
 
 }
