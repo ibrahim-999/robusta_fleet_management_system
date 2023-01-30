@@ -19,6 +19,8 @@ class BusTripResource extends JsonResource
             'trip_start_date' => $this->trip_start_date->toDateTimeString(),
             'trip_end_date' => $this->trip_end_date->toDateTimeString(),
             'stations_count' => $this->stations_count,
+            'bus' => new BusResource($this->whenLoaded('bus')),
+            'stations' => BusTripStationResource::collection($this->whenLoaded('stations')),
         ];
     }
 }
