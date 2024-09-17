@@ -22,6 +22,6 @@ class LoginController extends Controller
                     ->createToken('login')->plainTextToken
             ]);
         }
-        return ApiResponse::fail('invalid credentials');
+        return ApiResponse::fail('AUTH_ERROR', 422);
     }
 }

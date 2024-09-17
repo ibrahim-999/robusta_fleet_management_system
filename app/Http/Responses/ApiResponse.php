@@ -109,15 +109,32 @@ class ApiResponse
      * @return Response
      * @throws BindingResolutionException
      */
-    public static function fail(array|string $messages = [], int $code = 400): Response
+    public static function fail(
+        string $errorCode = 'SERVER_ERROR',
+        int $statusCode = 400
+    ): Response
     {
-        $responseBody = [];
-        if (!empty($messages)) {
+        $errorFilePath = '../errors.json';
+
+
+        $errors = json_decode(file_get_contents($errorFilePath), true);
+
+        if (isset($errors[$errorCode])) {
+            $errorDetails = $errors[$errorCode];
             $responseBody = [
-                'messages' => $messages,
+                'message' => $errorDetails['message'] ?? 'Unknown error',
+                'causer' => $errorDetails['causer'] ?? 'server',
+                'reason' => $errorDetails['reason'] ?? ''
+            ];
+        } else {
+            $responseBody = [
+                'message' => 'Unknown error',
+                'causer' => 'server',
+                'reason' => ''
             ];
         }
-        return self::buildResponse($responseBody, $code);
+
+        return self::buildResponse($responseBody, $statusCode);
     }
 
     /**
