@@ -33,31 +33,41 @@ class BookingController extends Controller
 
     public function getAvailableSeats(GetAvailableSeatsRequest $getAvailableSeatsRequest)
     {
-        $busy_seats = $this->bookingService
-            ->setStartAndFinishStations(
-                $getAvailableSeatsRequest->get('start_station'),
-                $getAvailableSeatsRequest->get('finish_station'))
-            ->getBusySeats();
+        try {
+            $busy_seats = $this->bookingService
+                ->setStartAndFinishStations(
+                    $getAvailableSeatsRequest->get('start_station'),
+                    $getAvailableSeatsRequest->get('finish_station'))
+                ->getBusySeats();
 
-        $buses = BusTrip::whereDay('trip_start_date', today())
-            ->whereHas('stations', function ($stations_query) use ($busy_seats) {
-                $stations_query
-                    ->whereIn('city_id', [
-                        request('start_station'),
-                        request('finish_station')
-                    ]);
-            })
-            ->with('bus', function ($bus_query) use ($busy_seats) {
-                $bus_query
-                    ->with('seats', function ($seats_query) use ($busy_seats) {
-                    $seats_query
-                        ->whereNotIn('id', $busy_seats);
-                });
-            })
-            ->with('stations.city')
-            ->withCount('stations')
-            ->paginate();
-        return BusTripResource::collection($buses);
+            $buses = BusTrip::whereDay('trip_start_date', today())
+                ->whereHas('stations', function ($stations_query) use ($busy_seats) {
+                    $stations_query
+                        ->whereIn('city_id', [
+                            request('start_station'),
+                            request('finish_station')
+                        ]);
+                })
+                ->with('bus', function ($bus_query) use ($busy_seats) {
+                    $bus_query
+                        ->with('seats', function ($seats_query) use ($busy_seats) {
+                            $seats_query
+                                ->whereNotIn('id', $busy_seats);
+                        });
+                })
+                ->with('stations.city')
+                ->withCount('stations')
+                ->paginate();
+
+            return BusTripResource::collection($buses);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return ApiResponse::fail('NO_BUSES_FOUND', 404);
+
+        } catch (\Exception $e) {
+            // Handle any general exceptions
+            return ApiResponse::fail('SERVER_ERROR', 500);
+        }
     }
 
     public function bookTrip(BookTripRequest $bookTripRequest)

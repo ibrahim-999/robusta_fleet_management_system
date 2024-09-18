@@ -1,17 +1,17 @@
 {
-    "VALIDATION_ERROR": {
-        "message": "Validation error occurred",
-        "causer": "user",
-        "reason": "ID66"
-    },
     "SERVER_ERROR": {
-        "message": "An unexpected server error occurred",
+        "message": "A server error occurred.",
         "causer": "server",
-        "reason": "DC45"
+        "reason": "The server encountered an issue."
     },
-    "AUTH_ERROR": {
-        "message": "Authentication failed",
+    "VALIDATION_ERROR": {
+        "message": "Validation failed.",
         "causer": "user",
-        "reason": "IC32"
+        "reason": "Invalid input provided."
+    },
+    "NO_BUSES_FOUND": {
+        "message": "No buses found for the selected route.",
+        "causer": "user",
+        "reason": "There are no available buses between the selected stations."
     }
 }

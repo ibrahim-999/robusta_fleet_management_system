@@ -9,19 +9,20 @@ use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    public function login(LoginRequest $loginRequest)
+    public function login(LoginRequest $loginRequest): \Illuminate\Http\Response
     {
-        if (auth()->attempt($loginRequest->only('email', 'password'))) {
-            auth()
-                ->user()
-                ->tokens()
-                ->delete();
-            return ApiResponse::success([
-                'token' => auth()
-                    ->user()
-                    ->createToken('login')->plainTextToken
-            ]);
+        try {
+            if (auth()->attempt($loginRequest->only('email', 'password'))) {
+                auth()->user()->tokens()->delete();
+
+                return ApiResponse::success([
+                    'token' => auth()->user()->createToken('login')->plainTextToken
+                ]);
+            }
+
+            return ApiResponse::forbidden('AUTH_ERROR');
+        } catch (\Exception $e) {
+            return ApiResponse::fail('SERVER_ERROR', 500);
         }
-        return ApiResponse::fail('AUTH_ERROR', 422);
     }
 }

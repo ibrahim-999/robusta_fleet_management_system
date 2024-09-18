@@ -110,32 +110,41 @@ class ApiResponse
      * @throws BindingResolutionException
      */
     public static function fail(
-        string $errorCode = 'SERVER_ERROR',
+        string|array $errorCode = 'SERVER_ERROR', // Handle both string and array
         int $statusCode = 400
     ): Response
     {
         $errorFilePath = '../errors.json';
-
-
         $errors = json_decode(file_get_contents($errorFilePath), true);
 
-        if (isset($errors[$errorCode])) {
-            $errorDetails = $errors[$errorCode];
+        $responseBody = [];
+
+        if (is_array($errorCode)) {
             $responseBody = [
-                'message' => $errorDetails['message'] ?? 'Unknown error',
-                'causer' => $errorDetails['causer'] ?? 'server',
-                'reason' => $errorDetails['reason'] ?? ''
+                'messages' => $errorCode,
+                'causer' => 'user',
+                'reason' => 'Validation errors or multiple issues'
             ];
         } else {
-            $responseBody = [
-                'message' => 'Unknown error',
-                'causer' => 'server',
-                'reason' => ''
-            ];
+            if (isset($errors[$errorCode])) {
+                $errorDetails = $errors[$errorCode];
+                $responseBody = [
+                    'message' => $errorDetails['message'] ?? 'Unknown error',
+                    'causer' => $errorDetails['causer'] ?? 'server',
+                    'reason' => $errorDetails['reason'] ?? ''
+                ];
+            } else {
+                $responseBody = [
+                    'message' => 'Unknown error',
+                    'causer' => 'server',
+                    'reason' => ''
+                ];
+            }
         }
 
         return self::buildResponse($responseBody, $statusCode);
     }
+
 
     /**
      * Make UnAuthorized response
@@ -143,16 +152,32 @@ class ApiResponse
      * @return Response
      * @throws BindingResolutionException
      */
-    public static function unauthorized(array|string $messages = []): Response
+    public static function unauthorized(
+        string $errorCode = 'UNAUTHORIZED_ACCESS',
+        int $statusCode = 401
+    ): Response
     {
-        $responseBody = [];
-        if (!empty($messages)) {
+        $errorFilePath = '../errors.json';
+        $errors = json_decode(file_get_contents($errorFilePath), true);
+
+        if (isset($errors[$errorCode])) {
+            $errorDetails = $errors[$errorCode];
             $responseBody = [
-                'messages' => $messages,
+                'message' => $errorDetails['message'] ?? 'Unauthorized access',
+                'causer' => $errorDetails['causer'] ?? 'client',
+                'reason' => $errorDetails['reason'] ?? 'No permission to access this resource'
+            ];
+        } else {
+            $responseBody = [
+                'message' => 'Unauthorized access',
+                'causer' => 'client',
+                'reason' => 'No permission to access this resource'
             ];
         }
-        return self::buildResponse($responseBody, 401);
+
+        return self::buildResponse($responseBody, $statusCode);
     }
+
 
     /**
      * Make Forbidden response
@@ -160,14 +185,30 @@ class ApiResponse
      * @return Response
      * @throws BindingResolutionException
      */
-    public static function forbidden(array|string $messages = []): Response
+    public static function forbidden(
+        string $errorCode = 'FORBIDDEN_ACCESS',
+        int $statusCode = 403
+    ): Response
     {
-        $responseBody = [];
-        if (!empty($messages)) {
+        $errorFilePath = '../errors.json';
+        $errors = json_decode(file_get_contents($errorFilePath), true);
+
+        if (isset($errors[$errorCode])) {
+            $errorDetails = $errors[$errorCode];
             $responseBody = [
-                'messages' => $messages,
+                'message' => $errorDetails['message'] ?? 'Forbidden access',
+                'causer' => $errorDetails['causer'] ?? 'client',
+                'reason' => $errorDetails['reason'] ?? 'You do not have permission to perform this action'
+            ];
+        } else {
+            $responseBody = [
+                'message' => 'Forbidden access',
+                'causer' => 'client',
+                'reason' => 'You do not have permission to perform this action'
             ];
         }
-        return self::buildResponse($messages, 403);
+
+        return self::buildResponse($responseBody, $statusCode);
     }
+
 }

@@ -1,5 +1,6 @@
 {
     "IC32": "Invalid credentials provided",
     "DC45": "Internal server error occurred",
-    "ID66": "Invalid input data"
+    "ID66": "Invalid input data",
+    "EY54": "Validation errors or multiple issues"
 }
